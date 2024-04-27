@@ -145,7 +145,25 @@ class PlayerResource(Resource):
             return {'message': 'Player not found'}, 404
         return jsonify(player.to_dict())
 
-    
+    def put(self, player_id):
+        player = Player.query.get(player_id)
+        if not player:
+            return {'message': 'Player not found'}, 404
+        data = request.get_json()
+        player.name = data.get('name', player.name)
+        player.number = data.get('number', player.number)
+        player.position = data.get('position', player.position)
+        player.team_id = data.get('team_id', player.team_id)
+        db.session.commit()
+        return jsonify(player.to_dict())
+
+    def delete(self, player_id):
+        player = Player.query.get(player_id)
+        if not player:
+            return {'message': 'Player not found'}, 404
+        db.session.delete(player)
+        db.session.commit()
+        return {'message': 'Player deleted'}
 
 class TeamResource(Resource):
     def get(self, team_id):
@@ -154,8 +172,22 @@ class TeamResource(Resource):
             return {'message': 'Team not found'}, 404
         return jsonify(team.to_dict())
 
-    
+    def put(self, team_id):
+        team = Teams.query.get(team_id)
+        if not team:
+            return {'message': 'Team not found'}, 404
+        data = request.get_json()
+        team.name = data.get('name', team.name)
+        db.session.commit()
+        return jsonify(team.to_dict())
 
+    def delete(self, team_id):
+        team = Teams.query.get(team_id)
+        if not team:
+            return {'message': 'Team not found'}, 404
+        db.session.delete(team)
+        db.session.commit()
+        return {'message': 'Team deleted'}
 
 class GameResource(Resource):
     def get(self, game_id):
@@ -163,47 +195,113 @@ class GameResource(Resource):
         if not game:
             return {'message': 'Game not found'}, 404
         return jsonify(game.to_dict())
-    
-    
-    
+
+    def put(self, game_id):
+        game = Game.query.get(game_id)
+        if not game:
+            return {'message': 'Game not found'}, 404
+        data = request.get_json()
+        game.home_team_id = data.get('home_team_id', game.home_team_id)
+        game.away_team_id = data.get('away_team_id', game.away_team_id)
+        game.home_score = data.get('home_score', game.home_score)
+        game.away_score = data.get('away_score', game.away_score)
+        game.home_sog = data.get('home_sog', game.home_sog)
+        game.away_sog = data.get('away_sog', game.away_sog)
+        game.period = data.get('period', game.period)
+        game.clock = data.get('clock', game.clock)
+        db.session.commit()
+        return jsonify(game.to_dict())
+
+    def delete(self, game_id):
+        game = Game.query.get(game_id)
+        if not game:
+            return {'message': 'Game not found'}, 404
+        db.session.delete(game)
+        db.session.commit()
+        return {'message': 'Game deleted'}
+
 class RosterResource(Resource):
     def get(self, roster_id):
         roster = Roster.query.get(roster_id)
         if not roster:
             return {'message': 'Roster not found'}, 404
         return jsonify(roster.to_dict())
-    
-    
-    
+
+    def put(self, roster_id):
+        roster = Roster.query.get(roster_id)
+        if not roster:
+            return {'message': 'Roster not found'}, 404
+        data = request.get_json()
+        roster.team_id = data.get('team_id', roster.team_id)
+        db.session.commit()
+        return jsonify(roster.to_dict())
+
+    def delete(self, roster_id):
+        roster = Roster.query.get(roster_id)
+        if not roster:
+            return {'message': 'Roster not found'}, 404
+        db.session.delete(roster)
+        db.session.commit()
+        return {'message': 'Roster deleted'}
+
 class StatsResource(Resource):
     def get(self, stat_id):
         stat = Stats.query.get(stat_id)
         if not stat:
             return {'message': 'Stat not found'}, 404
         return jsonify(stat.to_dict())
-    
-    
-    
+
+    def put(self, stat_id):
+        stat = Stats.query.get(stat_id)
+        if not stat:
+            return {'message': 'Stat not found'}, 404
+        data = request.get_json()
+        stat.goals = data.get('goals', stat.goals)
+        stat.assists = data.get('assists', stat.assists)
+        stat.pim = data.get('pim', stat.pim)
+        stat.faceoff_wins = data.get('faceoff_wins', stat.faceoff_wins)
+        stat.faceoff_losses = data.get('faceoff_losses', stat.faceoff_losses)
+        stat.faceoff_percentage = data.get('faceoff_percentage', stat.faceoff_percentage)
+        db.session.commit()
+        return jsonify(stat.to_dict())
+
+    def delete(self, stat_id):
+        stat = Stats.query.get(stat_id)
+        if not stat:
+            return {'message': 'Stat not found'}, 404
+        db.session.delete(stat)
+        db.session.commit()
+        return {'message': 'Stat deleted'}
+
 class GoalsResource(Resource):
     def get(self, goal_id):
         goal = Goals.query.get(goal_id)
         if not goal:
             return {'message': 'Goal not found'}, 404
         return jsonify(goal.to_dict())
-    
-    def post(self):
+
+    def put(self, goal_id):
+        goal = Goals.query.get(goal_id)
+        if not goal:
+            return {'message': 'Goal not found'}, 404
         data = request.get_json()
-        new_goal = Goals(
-            game_id=data.get('game_id'),
-            period=data.get('period'),
-            time=data.get('time'),
-            scorer=data.get('scorer'),
-            assist1=data.get('assist1'),
-            assist2=data.get('assist2')
-        )
-        db.session.add(new_goal)
+        goal.game_id = data.get('game_id', goal.game_id)
+        goal.period = data.get('period', goal.period)
+        goal.time = data.get('time', goal.time)
+        goal.scorer_id = data.get('scorer', goal.scorer_id)
+        goal.assist1_id = data.get('assist1', goal.assist1_id)
+        goal.assist2_id = data.get('assist2', goal.assist2_id)
         db.session.commit()
-        return jsonify(new_goal.to_dict()), 201
+        return jsonify(goal.to_dict())
+
+    def delete(self, goal_id):
+        goal = Goals.query.get(goal_id)
+        if not goal:
+            return {'message': 'Goal not found'}, 404
+        db.session.delete(goal)
+        db.session.commit()
+        return {'message': 'Goal deleted'}
+
 
 class TeamsResource(Resource):
     def get(self):
@@ -333,4 +431,4 @@ api.add_resource(StatsAllResource, '/stats')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, host="192.168.86.61")
