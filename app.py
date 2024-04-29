@@ -6,12 +6,15 @@ from sqlalchemy.orm import relationship
 from flask_migrate import Migrate
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///MKL.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 api = Api(app)
 
-class Games(db.model):
+
+
+class Games(db.Model):
+    __tablename__ = 'Games'
     GameID = db.Column(db.Integer, primary_key=True)
     Date = db.Column(db.String(50))
     Location = db.Column(db.String(50))
@@ -34,7 +37,17 @@ class Games(db.model):
             'TimeRemaining': self.TimeRemaining
         }
 
-class GameStats(db.model):
+class Teams(db.Model):
+    __tablename__ = 'Teams'
+    TeamID = db.Column(db.Integer, primary_key=True)
+    TeamName = db.Column(db.String(50))
+    Abbreviation = db.Column(db.String(50))
+    City = db.Column(db.String(50))
+    CoachName = db.Column(db.String(50))
+    AssistantCoachName = db.Column(db.String(50))
+
+class GameStats(db.Model):
+    __tablename__ = 'GameStats'
     StatID = db.Column(db.Integer, primary_key=True)
     GameID = db.Column(db.Integer, ForeignKey('Games.GameID'))
     PlayerID = db.Column(db.Integer, ForeignKey('Players.PlayerID'))
@@ -63,7 +76,8 @@ class GameStats(db.model):
             'FaceOffPercentage': self.FaceOffPercentage
         }
 
-class Goals(db.model):
+class Goals(db.Model):
+    __tablename__ = 'Goals'
     GoalID = db.Column(db.Integer, primary_key=True)
     GameID = db.Column(db.Integer, ForeignKey('Games.GameID'))
     PeriodNumber = db.Column(db.Integer)
@@ -88,7 +102,8 @@ class Goals(db.model):
             'Time': self.Time
         }
 
-class GoaltenderStats(db.model):
+class GoaltenderStats(db.Model):
+    __tablename__ = 'GoaltenderStats'
     GoaltenderStatID = db.Column(db.Integer, primary_key=True)
     PlayerID = db.Column(db.Integer, ForeignKey('Players.PlayerID'))
     GameID = db.Column(db.Integer, ForeignKey('Games.GameID'))
@@ -113,7 +128,8 @@ class GoaltenderStats(db.model):
             'Shutout': self.Shutout
         }
 
-class LeagueTable(db.model):
+class LeagueTable(db.Model):
+    __tablename__ = 'LeagueTable'
     LeagueTableID = db.Column(db.Integer, primary_key=True)
     TeamID = db.Column(db.Integer, ForeignKey('Teams.TeamID'))
     SeasonYear = db.Column(db.String(50))
@@ -154,7 +170,8 @@ class LeagueTable(db.model):
             'GD': self.GD
         }
 
-class Penalties(db.model):
+class Penalties(db.Model):
+    __tablename__ = 'Penalties'
     PenaltyID = db.Column(db.Integer, primary_key=True)
     GameID = db.Column(db.Integer, ForeignKey('Games.GameID'))
     PlayerID = db.Column(db.Integer, ForeignKey('Players.PlayerID'))
@@ -181,7 +198,8 @@ class Penalties(db.model):
             'TimeRemaining': self.TimeRemaining
         }
 
-class PeriodStats(db.model):
+class PeriodStats(db.Model):
+    __tablename__ = 'PeriodStats'
     PeriodStatID = db.Column(db.Integer, primary_key=True)
     GameID = db.Column(db.Integer, ForeignKey('Games.GameID'))
     PeriodNumber = db.Column(db.Integer)
@@ -208,7 +226,8 @@ class PeriodStats(db.model):
             'AwayPIM': self.AwayPIM
         }
 
-class Players(db.model):
+class Players(db.Model):
+    __tablename__ = 'Players'
     PlayerID = db.Column(db.Integer, primary_key=True)
     FirstName = db.Column(db.String(50))
     LastName = db.Column(db.String(50))
@@ -239,7 +258,8 @@ class Players(db.model):
             'BirthCountry': self.BirthCountry
         }
 
-class SeasonGoaltenderStats(db.model):
+class SeasonGoaltenderStats(db.Model):
+    __tablename__ = 'SeasonGoaltenderStats'
     SeasonGoaltenderStatID = db.Column(db.Integer, primary_key=True)
     PlayerID = db.Column(db.Integer, ForeignKey('Players.PlayerID'))
     SeasonYear = db.Column(db.String(50))
@@ -272,7 +292,8 @@ class SeasonGoaltenderStats(db.model):
             'SavePercentage': self.SavePercentage
         }
 
-class SeasonStats(db.model):
+class SeasonStats(db.Model):
+    __tablename__ = 'SeasonStats'
     SeasonStatID = db.Column(db.Integer, primary_key=True)
     PlayerID = db.Column(db.Integer, ForeignKey('Players.PlayerID'))
     SeasonYear = db.Column(db.String(50))
@@ -303,7 +324,8 @@ class SeasonStats(db.model):
             'FaceOffPercentage': self.FaceOffPercentage
         }
 
-class ShootoutAttempts(db.model):
+class ShootoutAttempts(db.Model):
+    __tablename__ = 'ShootoutAttempts'
     ShootoutAttemptID = db.Column(db.Integer, primary_key=True)
     GameID = db.Column(db.Integer, ForeignKey('Games.GameID'))
     PlayerID = db.Column(db.Integer, ForeignKey('Players.PlayerID'))
@@ -324,7 +346,8 @@ class ShootoutAttempts(db.model):
             'Goal': self.Goal
         }
     
-class Staff(db.model):
+class Staff(db.Model):
+    __tablename__ = 'Staff'
     StaffID = db.Column(db.Integer, primary_key=True)
     GameID = db.Column(db.Integer, ForeignKey('Games.GameID'))
     FirstName = db.Column(db.String(50))
@@ -343,13 +366,7 @@ class Staff(db.model):
             'Role': self.Role
         }
 
-class Teams(db.model):
-    TeamID = db.Column(db.Integer, primary_key=True)
-    TeamName = db.Column(db.String(50))
-    Abbreviation = db.Column(db.String(50))
-    City = db.Column(db.String(50))
-    CoachName = db.Column(db.String(50))
-    AssistantCoachName = db.Column(db.String(50))
+
 
     def __repr__(self):
         return '<Team %r>' % self.TeamID
