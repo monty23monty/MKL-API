@@ -382,3 +382,39 @@ class Staff(db.Model):
             'CoachName': self.CoachName,
             'AssistantCoachName': self.AssistantCoachName
         }
+    
+class ScoreboardData(db.Model):
+    __tablename__ = 'ScoreboardData'
+    ScoreboardDataID = db.Column(db.Integer, primary_key=True)
+    Clock = db.Column(db.String(10))
+    AwayScore = db.Column(db.Integer)
+    HomeScore = db.Column(db.Integer)
+    Period = db.Column(db.Integer)
+    awaypenplayer1 = db.Column(db.Integer, nullable=True)
+    awaypenplayer2 = db.Column(db.Integer, nullable=True)
+    awaypentiime1 = db.Column(db.String(10), nullable=True)
+    awaypentiime2 = db.Column(db.String(10), nullable=True)
+    homepenplayer1 = db.Column(db.Integer, nullable=True)
+    homepenplayer2 = db.Column(db.Integer, nullable=True)
+    homepentiime1 = db.Column(db.String(10), nullable=True)
+    homepentiime2 = db.Column(db.String(10), nullable=True)
+
+    def __repr__(self):
+        return '<ScoreboardData %r>' % self.ScoreboardDataID
+    
+    def to_json(self):
+        return {
+            'ScoreboardDataID': self.ScoreboardDataID,
+            'Clock': self.Clock,
+            'AwayScore': self.AwayScore,
+            'HomeScore': self.HomeScore,
+            'Period': self.Period,
+            'awaypenplayer1': self.awaypenplayer1,
+            'awaypenplayer2': self.awaypenplayer2,
+            'awaypentiime1': self.awaypentiime1,
+            'awaypentiime2': self.awaypentiime2,
+            'homepenplayer1': self.homepenplayer1,
+            'homepenplayer2': self.homepenplayer2,
+            'homepentiime1': self.homepentiime1,
+            'homepentiime2': self.homepentiime2
+        }

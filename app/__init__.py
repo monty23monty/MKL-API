@@ -1,6 +1,6 @@
 from flask import Flask
 
-from .extensions import api, db
+from .extensions import api, db, migrate
 from .resources import ns
 
 def create_app():
@@ -11,6 +11,8 @@ def create_app():
     # Initialize the extensions
     api.init_app(app, version='0.1', title='MKL API', description='An API for the MKL database')
     db.init_app(app)
+    migrate.init_app(app, db)
+
 
     #with app.app_context():
      #   db.create_all()

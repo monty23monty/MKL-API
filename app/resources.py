@@ -1,7 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from .api_models import games_model, teams_model, gamestats_model, goals_model, goaltenderstats_model, leaguetable_model, penalties_model, periodstats_model, players_model, seasongoaltenderstats_model, seasonstats_model, shootoutattempts_model, staff_model
 from .extensions import db, require_apikey
-from .models import Games, Teams, GameStats, Goals, GoaltenderStats, LeagueTable, Penalties, PeriodStats, Players, SeasonGoaltenderStats, SeasonStats, ShootoutAttempts, Staff
+from .models import Games, Teams, GameStats, Goals, GoaltenderStats, LeagueTable, Penalties, PeriodStats, Players, SeasonGoaltenderStats, SeasonStats, ShootoutAttempts, Staff, ScoreboardData
 from flask import request
 
 ns = Namespace('api')
@@ -529,3 +529,39 @@ class TeamAPI(Resource):
     def get(self, teamname):
         team = Teams.query.filter_by(TeamName=teamname).first()
         return team.to_json()
+    
+
+#recive scoreboard data (post)
+
+@ns.route('/scoreboard')
+class Scoreboard(Resource):
+    def post(self):
+        data = request.json   
+        try:
+            away_score = int(data.get('Away Score.Text', 0)) 
+            home_score = int(data.get('Home score.Text', 0))
+            period = data.get('Period.Text', '').strip('stndrh').strip() 
+            clock = data.get('clock.Text', '')
+
+            # Assuming there's only ever one scoreboard data record
+            scoreboard = ScoreboardData.query.first() or ScoreboardData()
+            scoreboard.Clock = clock
+            scoreboard.AwayScore = away_score
+            scoreboard.HomeScore = home_score
+            scoreboard.Period = period
+            
+            scoreboard.awaypenplayer1 = data.get('awaypenplayer1.Text', '')
+            scoreboard.awaypenplayer2 = data.get('awaypenplayer2.Text', '')
+            scoreboard.awaypentiime1 = data.get('awaypentime1.Text', '')
+            scoreboard.awaypentiime2 = data.get('awaypentime2.Text', '')
+            scoreboard.homepenplayer1 = data.get('homepenplayer1.Text', '')
+            scoreboard.homepenplayer2 = data.get('homepenplayer2.Text', '')
+            scoreboard.homepentiime1 = data.get('homepentime1.Text', '')
+            scoreboard.homepentiime2 = data.get('homepentime2.Text', '')
+
+            db.session.add(scoreboard)
+            db.session.commit()
+
+            return jsonify({"message": "Scoreboard updated successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400

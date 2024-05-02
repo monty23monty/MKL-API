@@ -2,8 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from flask_restx import Api, abort
 
+from flask_migrate import Migrate
+
 api = Api()
 db = SQLAlchemy()
+migrate = Migrate()
 
 from flask import request, jsonify
 from functools import wraps 
